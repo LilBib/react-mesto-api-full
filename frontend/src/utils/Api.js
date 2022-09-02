@@ -2,7 +2,6 @@ export class Api {
     constructor(options) {
         this._baseURL = options.baseURL;
         this._headers = options.headers;
-        this._baseAuthURL = options.baseAuthURL;
     }
 
     _checkResponse(res) {
@@ -85,7 +84,7 @@ export class Api {
     }
 
     signup(password, email) {
-        return fetch(`${this._baseAuthURL}/signup`, {
+        return fetch(`${this._baseURL}/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -97,7 +96,7 @@ export class Api {
         }).then(this._checkResponse)
     }
     signin(password, email) {
-        return fetch(`${this._baseAuthURL}/signin`, {
+        return fetch(`${this._baseURL}/signin`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -110,21 +109,25 @@ export class Api {
     }
 
     checkToken() {
-        return fetch(`${this._baseAuthURL}/users/me`, {
+        return fetch(`${this._baseURL}/users/me`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization" : `Bearer ${localStorage.getItem('jwt')}`
+                'Authorization' : `Bearer ${localStorage.getItem('jwt')}`
               }
         }).then(this._checkResponse)
     }
 
 }
-export const api = new Api({
-    baseURL: 'https://mesto.nomoreparties.co/v1/cohort36',
+export const api = new Api(localStorage.getItem('jwt') ? {
+    baseURL: 'https://api.vladimirmisakyan.mesto.project.nomoredomains.sbs',
     headers: {
-      authorization: 'a4b67e43-7921-4ffc-97a3-90eb387a74ab',
-      'Content-Type': 'application/json'
-    },
-    baseAuthURL: 'https://auth.nomoreparties.co'
+      'Content-Type': 'application/json',
+      'Authorization' : `Bearer ${localStorage.getItem('jwt')}`,
+    }
+  } : {
+    baseURL: 'https://api.vladimirmisakyan.mesto.project.nomoredomains.sbs',
+    headers: {
+      'Content-Type': 'application/json',
+    }
   });

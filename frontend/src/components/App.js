@@ -34,10 +34,10 @@ function App() {
   React.useEffect(() => {
     if (localStorage.getItem("jwt")) {
       api
-        .checkToken()
+        .getUserInfo()
         .then((data) => {
-          setCurrentUser({ _id: `${data.data._id}` });
-          setCurrentUserEmail(data.data.email);
+          setCurrentUser({ _id: `${data._id}` });
+          setCurrentUserEmail(data.email);
           setLogInState(true);
         })
         .catch((err) => {
@@ -68,7 +68,7 @@ function App() {
       api
         .getInitialCards()
         .then((res) => {
-          setCards(res);
+          setCards(res.data);
         })
         .catch((err) => console.log(err));
     }
@@ -91,7 +91,7 @@ function App() {
   );
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const isLiked = card.likes.some((i) => i === currentUser._id);
     if (!isLiked) {
       api
         .like(card._id)
@@ -150,7 +150,11 @@ function App() {
   const handleAddCard = (name, link) => {
     api
       .postNewCard(name, link)
-      .then((newCard) => setCards([newCard, ...cards]))
+      .then((newCard) => {
+        if (cards[0]) {
+          setCards([newCard, ...cards])
+        } setCards([newCard])
+      })
       .then(closeAllPopups)
       .catch((err) => console.log(err));
   };
