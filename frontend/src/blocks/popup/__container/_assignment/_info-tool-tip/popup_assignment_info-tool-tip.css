@@ -1,0 +1,7 @@
+.popup__container_assignment_info-tool-tip {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0;
+}

@@ -1,0 +1,7 @@
+.element__card {
+    width: 282px;
+    object-fit:fill;
+    min-height: 282px;
+    max-height: 282px;
+    border-radius: 10px 10px 0px 0px;
+}

@@ -1,0 +1,12 @@
+.popup__container_assignment_card {
+    position: relative;
+    max-width: 75vw;
+    max-height:75vh;
+    z-index: 1;
+    transform: none;
+    background: none;
+    border-radius: none;
+    width: min-content;
+    top: 0;
+    left: 0;
+}

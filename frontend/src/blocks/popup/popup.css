@@ -1,0 +1,11 @@
+.popup {
+    position: fixed;
+    top:0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5));
+    visibility: hidden;
+    transition: visibility 0s, opacity 0.25s ease-in-out;
+    transition-delay: 0.25s, 0s;
+    opacity: 0;
+}

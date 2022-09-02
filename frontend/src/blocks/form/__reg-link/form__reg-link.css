@@ -1,0 +1,15 @@
+.form__reg-link {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    align-self: center;
+    text-align: center;
+    color: #FFFFFF; 
+    text-decoration: none;
+    margin-top: 15px;
+}
+.form__reg-link:hover {
+    opacity: .8;
+}
