@@ -1,7 +1,6 @@
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
-import PopupWithForm from "./PopupWithForm";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPopup from "./AddPopup";
@@ -11,7 +10,7 @@ import Login from "./Login";
 import ProtectedRoute from "./ProtectedRoute";
 import { api } from "../utils/Api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Register from "./Register";
 import DeletePopup from "./DeletePopup";
