@@ -26,7 +26,7 @@ function PopupWithForm (props) {
                 <form name={`${props.name}-form`} className={`form form_task_${props.name}`} noValidate  onSubmit={props.onSubmit}>
                     <h2 className={`form__title form__title_task_${props.name}`}>{props.title}</h2>
                     {props.children}
-                    <input name="submit-button" type="submit" value={props.value || ''} className="form__button form__button_type_avatar-edit"/> 
+                    <input name="submit-button" type="submit" value={props.value || ''} className="form__button"/> 
                 </form>
             </div>
         </div>

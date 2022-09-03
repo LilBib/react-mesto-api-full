@@ -20,7 +20,7 @@ function Main (props) {
                 </div>
             </section>
             <section className="elements">
-                {props.cards.map(card => (<Card card={card} onClick={props.onCardClick} onLikeClick={props.onCardLike} onDeleteClick={props.onCardDelete} key={card._id} />))}
+                {props.cards.map(card => (<Card card={card} likes={card.likes} onClick={props.onCardClick} onLikeClick={props.onCardLike} onDeleteClick={props.onDeleteButton} loginState={props.isLoggedIn} key={card._id} />))}
             </section>
         </main>
     )

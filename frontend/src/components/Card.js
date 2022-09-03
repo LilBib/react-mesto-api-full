@@ -2,17 +2,21 @@ import React from "react";
 import errorImg from '../images/imgonerror.png'
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
-function Card ({ card, onClick, onLikeClick, onDeleteClick }) {
+function Card ({ card, likes, onClick, onLikeClick, onDeleteClick, loginState }) {
     const currentUser=React.useContext(CurrentUserContext);
     const imgRef=React.useRef();
-    let isLiked = card.likes.some(i => i === currentUser._id);
+    const [isLiked, setLikeStatus] = React.useState(likes.some(i => i === currentUser._id));
+    React.useEffect(()=> {
+        setLikeStatus(likes.some(i => i === currentUser._id))
+    },[loginState, currentUser._id, likes]);
     const isOwner = card.owner === currentUser._id;
     function handleCardClick (evt) {
         if (evt.target.classList.contains('element__card'))
         onClick(card)
         }
     const handleLikeClick = () => {
-        onLikeClick(card)
+        onLikeClick(card);
+        setLikeStatus(!isLiked);
     }
     function handleDeleteButtonClick () {
         onDeleteClick(card);

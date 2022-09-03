@@ -14,6 +14,7 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import React, { useState, useCallback } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Register from "./Register";
+import DeletePopup from "./DeletePopup";
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupState] = useState(false);
@@ -28,15 +29,16 @@ function App() {
   const [selectedCard, setSelectedCard] = useState({ link: "1" });
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
+  const [currentCardOnDelete, setCurrentCardOnDelete] = React.useState({});
 
   const navigate = useNavigate();
 
   React.useEffect(() => {
     if (localStorage.getItem("jwt")) {
       api
-        .getUserInfo()
+        .getUserInfo(localStorage.getItem("jwt"))
         .then((data) => {
-          setCurrentUser({ _id: `${data._id}` });
+          setCurrentUser(data);
           setCurrentUserEmail(data.email);
           setLogInState(true);
         })
@@ -44,18 +46,9 @@ function App() {
           console.log(err);
           setCurrentUser({ _id: ` ` });
           setCurrentUserEmail(" ");
-          setLogInState(false);
         });
     }
-  }, []);
-  React.useEffect(() => {
-    if (isLoggedIn) {
-      api
-        .getUserInfo()
-        .then((res) => setCurrentUser(res))
-        .catch((err) => console.log(err));
-    }
-  }, [isEditAvatarPopupOpen, isLoggedIn]);
+  },[isLoggedIn]);
 
   React.useEffect(() => {
     if (isLoggedIn) {
@@ -66,47 +59,46 @@ function App() {
   React.useEffect(() => {
     if (isLoggedIn) {
       api
-        .getInitialCards()
+        .getInitialCards(localStorage.getItem("jwt"))
         .then((res) => {
-          setCards(res.data);
+          setCards(res.data.reverse());
         })
         .catch((err) => console.log(err));
     }
   }, [isLoggedIn]);
 
-  const deleteCard = useCallback(
-    (card) => {
-      const isOwner = card.owner._id === currentUser._id;
-
-      if (isOwner) {
+  function handleDeleteCard (card) {
+    api
+      .deleteCard(card._id, localStorage.getItem("jwt"))
+      .then(() => {
         api
-          .deleteCard(card._id)
-          .then(() => {
-            setCards((cards) => cards.filter((c) => c._id !== card._id));
+          .getInitialCards(localStorage.getItem("jwt"))
+          .then((res) => {
+            setCards(res.data.reverse());
           })
           .catch((err) => console.log(err));
-      }
-    },
-    [currentUser._id]
-  );
+      })
+      .catch((err) => console.log(err));
+    
+  }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i === currentUser._id);
     if (!isLiked) {
       api
-        .like(card._id)
+        .like(card._id, localStorage.getItem("jwt"))
         .then((newCard) => {
           setCards((cards) =>
-            cards.map((c) => (c._id === card._id ? newCard : c))
+            cards.map((c) => (c._id === card._id ? newCard.data : c))
           );
         })
         .catch((err) => console.log(err));
     } else {
       api
-        .unlike(card._id)
+        .unlike(card._id, localStorage.getItem("jwt"))
         .then((newCard) => {
           setCards((cards) =>
-            cards.map((c) => (c._id === card._id ? newCard : c))
+            cards.map((c) => (c._id === card._id ? newCard.data : c))
           );
         })
         .catch((err) => console.log(err));
@@ -121,7 +113,8 @@ function App() {
   const handleAddPlaceClick = () => {
     setAddPopupState(true);
   };
-  const handleDeleteButtonClick = () => {
+  const handleDeleteButtonClick = (card) => {
+    setCurrentCardOnDelete(card);
     setDeletePopupState(true);
   };
   const handleCardClick = (card) => {
@@ -130,18 +123,18 @@ function App() {
   };
   const handleUpdateUser = (name, description) => {
     api
-      .patchUserInfo(name, description)
+      .patchUserInfo(name, description, localStorage.getItem("jwt"))
       .then((res) => {
-        setCurrentUser(res);
+        setCurrentUser(res.data);
       })
       .then(closeAllPopups)
       .catch((err) => console.log(err));
   };
 
   const handleUpdateAvatar = (link) => {
-    api.patchAvatarInfo(link).catch((err) => console.log(err));
+    api.patchAvatarInfo(link, localStorage.getItem("jwt")).catch((err) => console.log(err));
     api
-      .getUserInfo()
+      .getUserInfo(localStorage.getItem("jwt"))
       .then((res) => setCurrentUser(res))
       .then(closeAllPopups)
       .catch((err) => console.log(err));
@@ -149,11 +142,9 @@ function App() {
 
   const handleAddCard = (name, link) => {
     api
-      .postNewCard(name, link)
+      .postNewCard(name, link, localStorage.getItem("jwt"))
       .then((newCard) => {
-        if (cards[0]) {
-          setCards([newCard, ...cards])
-        } setCards([newCard])
+        setCards([newCard.data, ...cards])
       })
       .then(closeAllPopups)
       .catch((err) => console.log(err));
@@ -163,6 +154,7 @@ function App() {
     api
       .signin(password, email)
       .then((data) => {
+        localStorage.removeItem("jwt");
         localStorage.setItem("jwt", data.token);
         setLogInState(true);
         setCurrentUserEmail(email);
@@ -172,6 +164,10 @@ function App() {
         setSignUpSuccessState(false);
         setInfoToolTipPopupState(true);
       });
+    api
+      .getUserInfo(localStorage.getItem("jwt"))
+      .then(user=>setCurrentUser(user))
+      .catch(err=>console.log(err))
   };
 
   const handleSignUp = (password, email) => {
@@ -193,7 +189,7 @@ function App() {
 
   const handleLogOut = () => {
     localStorage.removeItem("jwt");
-    setCurrentUser({ _id: "" });
+    setCurrentUser({});
     setCurrentUserEmail("");
     setLogInState(false);
   };
@@ -206,6 +202,7 @@ function App() {
     setImagePopupState(false);
     setInfoToolTipPopupState(false);
     setSelectedCard({ link: "1" });
+    setCurrentCardOnDelete({});
   };
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -245,7 +242,7 @@ function App() {
               onDeleteButton={handleDeleteButtonClick}
               cards={cards}
               onCardLike={handleCardLike}
-              onCardDelete={deleteCard}
+              isLoggedIn={isLoggedIn}
             />
             <Footer />
           </>
@@ -275,12 +272,11 @@ function App() {
           onAddCard={handleAddCard}
         />
 
-        <PopupWithForm
-          name="delete"
-          title="Вы уверены?"
-          value="Да"
+        <DeletePopup
           isOpen={isDeletePopupOpen}
           onClose={closeAllPopups}
+          onDeleteCard={handleDeleteCard}
+          card={currentCardOnDelete}
         />
 
         <InfoToolTip
