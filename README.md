@@ -3,4 +3,6 @@
   
 Пожалуйста, прикрепите в это описание ссылку на сайт, размещенный на Яндекс.Облаке.
 
-https://vladimirmisakyan.mesto.project.nomoredomains.sbs/
+Frontend: https://vladimirmisakyan.mesto.project.nomoredomains.sbs/
+Backend:  https://api.vladimirmisakyan.mesto.project.nomoredomains.sbs/
+ip: 62.84.127.88
